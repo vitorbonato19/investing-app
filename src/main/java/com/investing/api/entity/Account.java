@@ -3,6 +3,7 @@ package com.investing.api.entity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +16,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @UuidGenerator
     @Column(unique = true, nullable = false, updatable = false)
     private UUID uuid;
     @NotNull
@@ -22,14 +24,20 @@ public class Account {
     @Column(unique = true)
     @NotNull
     private String document;
+
+    @NotNull
+    @NotBlank
     private String password;
-    @Column(unique = true)
+    @Column(unique = true)  
     private String email;
     @Column(precision = 20, scale = 2)
     private BigDecimal equity;
     @OneToMany(mappedBy = "account")
     private List<Stock> stocks;
 
+    public Account() {
+
+    }
     public Account(Long id, UUID uuid, String name, String document, String password, String email, BigDecimal equity, List<Stock> stocks) {
         this.id = id;
         this.uuid = uuid;

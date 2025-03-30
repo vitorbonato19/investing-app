@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccountMapper {
@@ -16,6 +18,11 @@ public interface AccountMapper {
     @Mapping(target = "document", ignore = true)
     @Mapping(target = "password", ignore = true)
     Account responseToEntity(AccountResponseDto response);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "document", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    List<AccountResponseDto> entityToResponse(List<Account> entity);
 
 
     AccountResponseDto entityToResponse(Account entity);
