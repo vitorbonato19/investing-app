@@ -1,14 +1,19 @@
 package com.investing.api.service;
 
+import com.investing.api.entity.Stock;
 import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
+import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.mapper.AccountMapper;
 import com.investing.api.repository.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.hibernate.action.internal.EntityActionVetoException;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +34,8 @@ public class AccountService {
         return accountMapper.entityToResponse(accountRepository.findAll());
     }
 
-    public AccountResponseDto create(@NotNull @NotBlank AccountRequestDto request) {
+    @Transactional
+    public AccountResponseDto create(@NotNull @NotBlank @NotEmpty AccountRequestDto request) {
 
         var entity = accountMapper.requestToEntity(request);
 
@@ -46,7 +52,7 @@ public class AccountService {
             entity.setEmail(email);
             accountRepository.save(entity);
         } else {
-            throw new EntityNotFoundException("User not found with UUID " + uuid);
+            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -58,7 +64,32 @@ public class AccountService {
             entity.setPassword(password);
             accountRepository.save(entity);
         } else {
-            throw new EntityNotFoundException("User not found with UUID " + uuid);
+            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
         }
     }
+
+    public void deleteByUuid(String uuid) {
+
+        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+
+        if (entity != null) {
+            accountRepository.deleteByUuid(UUID.fromString(uuid));
+        } else {
+            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public AccountResponseDto getTotalStocks(String uuid) {
+
+        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+
+        if (entity != null) {
+
+            var stocks = entity.getStocks().stream()
+                    .map(stock -> new );
+
+        }
+
+    }
+
 }

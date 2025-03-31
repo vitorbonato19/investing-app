@@ -42,5 +42,9 @@ public class AccountController {
         return ResponseEntity.status(204).build();
     }
 
-
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@PathVariable String uuid) {
+        accountService.deleteByUuid(uuid);
+        return ResponseEntity.status(204).build();
+    }
 }

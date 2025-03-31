@@ -24,7 +24,6 @@ public class Account {
     @Column(unique = true)
     @NotNull
     private String document;
-
     @NotNull
     @NotBlank
     private String password;

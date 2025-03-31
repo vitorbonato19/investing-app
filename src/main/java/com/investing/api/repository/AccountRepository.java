@@ -25,4 +25,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Transactional
     @Query(nativeQuery = true, value = "UPDATE accounts set password = :password where uuid = :uuid")
     Void updatePasswordByUuid(@Param("uuid") String uuid, @Param("password") String password);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "DELETE from accounts where uuid = :uuid")
+    Void deleteByUuid(@Param("uuid") UUID uuid);
 }
