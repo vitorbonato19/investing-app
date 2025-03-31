@@ -24,7 +24,6 @@ public interface AccountMapper {
     @Mapping(target = "password", ignore = true)
     List<AccountResponseDto> entityToResponse(List<Account> entity);
 
-
     AccountResponseDto entityToResponse(Account entity);
 
     @Mapping(target = "id", ignore = true)

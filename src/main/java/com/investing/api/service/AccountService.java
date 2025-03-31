@@ -4,6 +4,8 @@ import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
 import com.investing.api.mapper.AccountMapper;
 import com.investing.api.repository.AccountRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
@@ -36,13 +38,16 @@ public class AccountService {
         return accountMapper.entityToResponse(entity);
     }
 
-    public void update(@NotNull @NotBlank UUID uuid, @NotNull @NotBlank AccountRequestDto newUSer) {
+    public void updateEmailByUuid(String uuid, String email) {
 
-        var exists = accountRepository.findByUUID(UUID.fromString(String.valueOf(uuid)));
+        var entity = accountRepository.findByUUID(uuid);
 
-        if (exists.getUuid() != null) {
-            
+        if (entity != null) {
+            entity.setEmail(email);
+            accountRepository.save(entity);
         }
+
+        throw new EntityNotFoundException("User not found with UUID " + uuid);
 
     }
 }
