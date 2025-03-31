@@ -40,14 +40,25 @@ public class AccountService {
 
     public void updateEmailByUuid(String uuid, String email) {
 
-        var entity = accountRepository.findByUUID(uuid);
+        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
 
         if (entity != null) {
             entity.setEmail(email);
             accountRepository.save(entity);
+        } else {
+            throw new EntityNotFoundException("User not found with UUID " + uuid);
         }
+    }
 
-        throw new EntityNotFoundException("User not found with UUID " + uuid);
+    public void updatePasswordByUUID(String uuid, String password) {
 
+        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+
+        if (entity != null) {
+            entity.setPassword(password);
+            accountRepository.save(entity);
+        } else {
+            throw new EntityNotFoundException("User not found with UUID " + uuid);
+        }
     }
 }

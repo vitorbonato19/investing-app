@@ -30,8 +30,17 @@ public class AccountController {
         return ResponseEntity.status(201).body(accountService.create(request));
     }
 
-    public ResponseEntity<Void> updateByEmail(@RequestParam String uuid, @RequestParam String email) {
+    @PatchMapping("/email")
+    public ResponseEntity<Void> updateEmail(@RequestParam String uuid, @RequestParam String email) {
         accountService.updateEmailByUuid(uuid, email);
         return ResponseEntity.status(204).build();
     }
+
+    @PatchMapping("/password")
+    public ResponseEntity<Void> updatePassword(@RequestParam String uuid, @RequestParam String password) {
+        accountService.updatePasswordByUUID(uuid, password);
+        return ResponseEntity.status(204).build();
+    }
+
+
 }
