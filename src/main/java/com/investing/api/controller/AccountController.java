@@ -2,8 +2,8 @@ package com.investing.api.controller;
 
 import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
+import com.investing.api.entity.dto.StockAccountResponseDto;
 import com.investing.api.service.AccountService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +46,10 @@ public class AccountController {
     public ResponseEntity<Void> delete(@PathVariable String uuid) {
         accountService.deleteByUuid(uuid);
         return ResponseEntity.status(204).build();
+    }
+
+    @GetMapping("/{ticker}")
+    public ResponseEntity<List<StockAccountResponseDto>> getStocksInfo(@PathVariable("ticker") String ticker, @RequestParam String id) {
+	        return ResponseEntity.status(200).body(accountService.getTotalStocks(id, ticker));
     }
 }
