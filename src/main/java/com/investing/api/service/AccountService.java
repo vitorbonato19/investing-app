@@ -1,7 +1,9 @@
 package com.investing.api.service;
 
+import com.investing.api.entity.Account;
 import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
+import com.investing.api.entity.dto.BrapiQuoteDto;
 import com.investing.api.entity.dto.StockAccountResponseDto;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;
@@ -88,24 +90,40 @@ public class AccountService {
         }
     }
 
-    public List<StockAccountResponseDto> getTotalStocks(String uuid, String ticker) {
+    public StockAccountResponseDto getTotalStocks(String uuid, String ticker) {
 
-        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        Account entity = accountRepository.findByUUID(UUID.fromString(uuid));
 
-        var brapi = externalApi.quote(BRAPI_TOKEN, ticker);
+        if (entity != null) {
 
-        List<StockAccountResponseDto> stocks = new ArrayList<>();
+            return new StockAccountResponseDto(
+                    UUID.fromString(uuid),
+                    entity.getName(),
+                    ticker,
+                    getCurrency(ticker),
+                    quoteEntity(ticker).results().getFirst().shortName(),
+                    entity.getStocks().getFirst().getQuantity(),
+                    quoteEntity(ticker).results().getFirst().regularMarketPrice(),
+                    mathTotalExternalApi(entity.getStocks().getFirst().getQuantity(), ticker)
+                    );
 
-        return entity.getStocks().stream().map(
-                sts -> new StockAccountResponseDto(
-                        entity.getUuid(),
-                        entity.getName(),
-                        brapi.results().getFirst().symbol(),
-                        brapi.results().getFirst().currency(),
-                        brapi.results().getFirst().shortName(),
-                        entity.getStocks().getFirst().getQuantity(),
-                        brapi.results().getFirst().regularMarketPrice(),
-                        brapi.results().getFirst().regularMarketPrice() * entity.getStocks().getFirst().getQuantity())).toList() ;
+        } else {
+            throw new RegisterNotFoundException("Account " + uuid + " not found.", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    public Double mathTotalExternalApi(Long quantity, String ticker) {
+
+        return externalApi.quote(BRAPI_TOKEN, ticker).results().getFirst().regularMarketPrice() * quantity;
+    }
+
+    public String getCurrency(String ticker) {
+        return externalApi.quote(BRAPI_TOKEN, ticker).results().getFirst().currency();
+    }
+
+    public BrapiQuoteDto quoteEntity(String ticker) {
+        return externalApi.quote(BRAPI_TOKEN, ticker);
     }
 
 }

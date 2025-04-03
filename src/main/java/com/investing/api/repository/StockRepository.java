@@ -3,10 +3,18 @@ package com.investing.api.repository;
 import com.investing.api.entity.Account;
 import com.investing.api.entity.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
 
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
+
+
+    @Query(nativeQuery = true, value = "select * from stocks where account_id = :account_id and ticker = :ticker")
+    Stock findByTicker(@Param("account_id") Long account_id, @Param("ticker") String ticker);
 
 
 }

@@ -8,7 +8,6 @@ public record StockAccountResponseDto(UUID account_id,
                                       String ticker,
                                       String currency,
                                       String shortName,
-
                                       Long quantity,
                                       Double actualRegularMarketPrice,
                                       Double totalValue) {

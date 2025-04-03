@@ -15,16 +15,21 @@ public class Stock {
 
     @Column(unique = true, nullable = false)
     private String ticker;
+    @Column(nullable = true)
     private String currency;
-    @Column(unique = false, nullable = false)
+    @Column(nullable = true)
     private String shortName;
-    @Column(unique = false, nullable = false)
+    @Column(nullable = true)
     private String longName;
     private Long quantity;
     @Column(precision = 20, scale = 2)
     private BigDecimal regularMarketPrice;
     @ManyToMany
-    private List<Account> account;
+    private List<Account> account_id;
+
+    public Stock() {
+
+    }
 
     public Stock(Long id, String ticker, String currency, String shortName, String longName, Long quantity, BigDecimal regularMarketPrice, List<Account> account) {
         this.id = id;
@@ -34,7 +39,7 @@ public class Stock {
         this.longName = longName;
         this.quantity = quantity;
         this.regularMarketPrice = regularMarketPrice;
-        this.account = account;
+        this.account_id = account;
     }
 
     public Long getId() {
@@ -93,11 +98,11 @@ public class Stock {
         this.regularMarketPrice = regularMarketPrice;
     }
 
-    public List<Account> getAccount() {
-        return account;
+    public List<Account> getAccount_id() {
+        return account_id;
     }
 
-    public void setAccount(List<Account> account) {
-        this.account = account;
+    public void setAccount_id(List<Account> account_id) {
+        this.account_id = account_id;
     }
 }
