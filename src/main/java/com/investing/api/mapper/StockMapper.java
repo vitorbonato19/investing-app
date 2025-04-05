@@ -29,5 +29,6 @@ public interface StockMapper {
     @Mapping(target = "shortName", ignore = true)
     @Mapping(target = "regularMarketPrice", ignore = true)
     @Mapping(target = "currency", ignore = true)
+    @Mapping(target = "account", ignore = true)
     Stock requestToEntity(StockRequestDto request);
 }

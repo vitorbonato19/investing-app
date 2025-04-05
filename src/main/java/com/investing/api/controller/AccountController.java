@@ -51,6 +51,6 @@ public class AccountController {
 
     @GetMapping("/{ticker}")
     public ResponseEntity<StockAccountResponseDto> getStocksInfo(@PathVariable("ticker") String ticker, @RequestParam String id) {
-	        return ResponseEntity.status(200).body(accountService.getTotalStocks(id, ticker));
+	        return ResponseEntity.status(200).body(accountService.getStockInfoByTicker(id, ticker));
     }
 }

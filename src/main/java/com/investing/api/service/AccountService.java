@@ -1,14 +1,17 @@
 package com.investing.api.service;
 
 import com.investing.api.entity.Account;
+import com.investing.api.entity.Stock;
 import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
 import com.investing.api.entity.dto.BrapiQuoteDto;
 import com.investing.api.entity.dto.StockAccountResponseDto;
+import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;
 import com.investing.api.mapper.AccountMapper;
 import com.investing.api.repository.AccountRepository;
+import com.investing.api.repository.StockRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +30,7 @@ import java.util.UUID;
 public class AccountService {
 
 
-    @Value("xoh96BQ4QMfLr6Ue5U8GYN")
+    @Value("${api.key}")
     private String BRAPI_TOKEN;
 
     private final AccountRepository accountRepository;
@@ -35,10 +39,13 @@ public class AccountService {
 
     private final BrapiExternalApi externalApi;
 
-    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, BrapiExternalApi externalApi) {
+    private final StockRepository stockRepository;
+
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, BrapiExternalApi externalApi, StockRepository stockRepository) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.externalApi = externalApi;
+        this.stockRepository = stockRepository;
     }
 
     public List<AccountResponseDto> findAll() {
@@ -90,27 +97,48 @@ public class AccountService {
         }
     }
 
-    public StockAccountResponseDto getTotalStocks(String uuid, String ticker) {
+    public StockAccountResponseDto getStockInfoByTicker(String uuid, String ticker) {
 
-        Account entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        if (uuid != null && ticker != null) {
+            Account entity = accountRepository.findByUUID(UUID.fromString(uuid));
 
-        if (entity != null) {
+            Stock stock = stockRepository.findByTicker(
+                    accountRepository.findByUUID(UUID.fromString(uuid)).getId()
+                    ,ticker);
 
-            return new StockAccountResponseDto(
-                    UUID.fromString(uuid),
-                    entity.getName(),
-                    ticker,
-                    getCurrency(ticker),
-                    quoteEntity(ticker).results().getFirst().shortName(),
-                    entity.getStocks().getFirst().getQuantity(),
-                    quoteEntity(ticker).results().getFirst().regularMarketPrice(),
-                    mathTotalExternalApi(entity.getStocks().getFirst().getQuantity(), ticker)
+            if (entity != null && stock != null) {
+
+                if (!stock.getRegularMarketPrice().equals(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()))) {
+
+                    return new StockAccountResponseDto(
+                            UUID.fromString(uuid),
+                            entity.getName(),
+                            ticker,
+                            getCurrency(ticker),
+                            quoteEntity(ticker).results().getFirst().shortName(),
+                            stock.getQuantity(),
+                            BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()),
+                            BigDecimal.valueOf(mathTotalExternalApi(entity.getStocks().getFirst().getQuantity(), ticker))
+                    );
+                } else {
+
+                    return new StockAccountResponseDto(
+                            UUID.fromString(uuid),
+                            entity.getName(),
+                            ticker,
+                            getCurrency(ticker),
+                            quoteEntity(ticker).results().getFirst().shortName(),
+                            stock.getQuantity(),
+                            stock.getRegularMarketPrice(),
+                            stock.getRegularMarketPrice().multiply(BigDecimal.valueOf(stock.getQuantity()))
                     );
 
-        } else {
-            throw new RegisterNotFoundException("Account " + uuid + " not found.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                throw new RegisterNotFoundException("Account or stock not found for with id " + uuid + " and ticker " + ticker + ".", HttpStatus.NOT_FOUND);
+            }
         }
-
+        throw new InvalidRequestException("Request was invalidated.", HttpStatus.BAD_REQUEST);
     }
 
     public Double mathTotalExternalApi(Long quantity, String ticker) {

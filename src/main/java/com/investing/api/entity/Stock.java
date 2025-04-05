@@ -1,5 +1,6 @@
 package com.investing.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String ticker;
     @Column(nullable = true)
     private String currency;
@@ -24,14 +25,14 @@ public class Stock {
     private Long quantity;
     @Column(precision = 20, scale = 2)
     private BigDecimal regularMarketPrice;
-    @ManyToMany
-    private List<Account> account_id;
+    @ManyToOne
+    private Account account;
 
     public Stock() {
 
     }
 
-    public Stock(Long id, String ticker, String currency, String shortName, String longName, Long quantity, BigDecimal regularMarketPrice, List<Account> account) {
+    public Stock(Long id, String ticker, String currency, String shortName, String longName, Long quantity, BigDecimal regularMarketPrice, Account account) {
         this.id = id;
         this.ticker = ticker;
         this.currency = currency;
@@ -39,7 +40,7 @@ public class Stock {
         this.longName = longName;
         this.quantity = quantity;
         this.regularMarketPrice = regularMarketPrice;
-        this.account_id = account;
+        this.account = account;
     }
 
     public Long getId() {
@@ -98,11 +99,12 @@ public class Stock {
         this.regularMarketPrice = regularMarketPrice;
     }
 
-    public List<Account> getAccount_id() {
-        return account_id;
+    @JsonIgnore
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccount_id(List<Account> account_id) {
-        this.account_id = account_id;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }
