@@ -99,7 +99,13 @@ public class AccountService {
 
     public StockAccountResponseDto getStockInfoByTicker(String uuid, String ticker) {
 
-        if (uuid != null && ticker != null) {
+        if (uuid != null
+                && !uuid.isEmpty()
+                && !uuid.isBlank()
+                && ticker != null
+                && !ticker.isBlank()
+                && !ticker.isEmpty()
+        ) {
             Account entity = accountRepository.findByUUID(UUID.fromString(uuid));
 
             Stock stock = stockRepository.findByTicker(
@@ -109,6 +115,8 @@ public class AccountService {
             if (entity != null && stock != null) {
 
                 if (!stock.getRegularMarketPrice().equals(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()))) {
+
+                    stock.setRegularMarketPrice(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()));
 
                     return new StockAccountResponseDto(
                             UUID.fromString(uuid),
@@ -135,7 +143,7 @@ public class AccountService {
 
                 }
             } else {
-                throw new RegisterNotFoundException("Account or stock not found for with id " + uuid + " and ticker " + ticker + ".", HttpStatus.NOT_FOUND);
+                throw new RegisterNotFoundException("Account or stock not found for id " + uuid + " and ticker " + ticker + ".", HttpStatus.NOT_FOUND);
             }
         }
         throw new InvalidRequestException("Request was invalidated.", HttpStatus.BAD_REQUEST);
