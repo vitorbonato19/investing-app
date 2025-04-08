@@ -1,5 +1,6 @@
 package com.investing.api.handler;
 
+import com.investing.api.exceptions.BadLoginRequestException;
 import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +27,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, ex.getStatus());
     }
 
-
     @ResponseBody
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<Map<String, Object>> invalidRequest(InvalidRequestException ex, HttpServletRequest request) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", ex.getStatus().value());
+        response.put("statusCode", ex.getStatus());
+        response.put("details", ex.getMessage());
+
+        return new ResponseEntity<>(response, ex.getStatus());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(BadLoginRequestException.class)
+    public ResponseEntity<Map<String, Object>> badLogin(BadLoginRequestException ex, HttpServletRequest request) {
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", ex.getStatus().value());

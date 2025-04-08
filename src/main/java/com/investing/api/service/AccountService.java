@@ -2,10 +2,8 @@ package com.investing.api.service;
 
 import com.investing.api.entity.Account;
 import com.investing.api.entity.Stock;
-import com.investing.api.entity.dto.AccountRequestDto;
-import com.investing.api.entity.dto.AccountResponseDto;
-import com.investing.api.entity.dto.BrapiQuoteDto;
-import com.investing.api.entity.dto.StockAccountResponseDto;
+import com.investing.api.entity.dto.*;
+import com.investing.api.exceptions.BadLoginRequestException;
 import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;
@@ -13,8 +11,11 @@ import com.investing.api.mapper.AccountMapper;
 import com.investing.api.repository.AccountRepository;
 import com.investing.api.repository.StockRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ import java.util.UUID;
 public class AccountService {
 
 
+    private static final Logger log = LoggerFactory.getLogger(AccountService.class);
     @Value("${api.key}")
     private String BRAPI_TOKEN;
 
@@ -41,11 +43,14 @@ public class AccountService {
 
     private final StockRepository stockRepository;
 
-    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, BrapiExternalApi externalApi, StockRepository stockRepository) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, BrapiExternalApi externalApi, StockRepository stockRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.externalApi = externalApi;
         this.stockRepository = stockRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public List<AccountResponseDto> findAll() {
@@ -55,11 +60,12 @@ public class AccountService {
     @Transactional
     public AccountResponseDto create(@NotNull @NotBlank @NotEmpty AccountRequestDto request) {
 
-        var entity = accountMapper.requestToEntity(request);
+        Account entity = accountMapper.requestToEntity(request);
+        entity.setPassword(bCryptPasswordEncoder.encode(request.password()));
 
-        accountRepository.save(entity);
+        Account response = accountRepository.save(entity);
 
-        return accountMapper.entityToResponse(entity);
+        return accountMapper.entityToResponse(response);
     }
 
     public void updateEmailByUuid(String uuid, String email) {
@@ -97,6 +103,16 @@ public class AccountService {
         }
     }
 
+    public Boolean verifyLoginCredentials(LoginRequestDto request) {
+        Account entity = accountRepository.findByDocument(request.document()).orElseThrow(
+                () ->
+                        new BadLoginRequestException(
+                                "Document or password do not matches, please verify your reuquest",
+                                HttpStatus.BAD_REQUEST)
+        );
+        return bCryptPasswordEncoder.matches(request.password(), entity.getPassword());
+    }
+
     public StockAccountResponseDto getStockInfoByTicker(String uuid, String ticker) {
 
         if (uuid != null
@@ -117,6 +133,8 @@ public class AccountService {
                 if (!stock.getRegularMarketPrice().equals(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()))) {
 
                     stock.setRegularMarketPrice(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()));
+
+                    stockRepository.save(stock);
 
                     return new StockAccountResponseDto(
                             UUID.fromString(uuid),

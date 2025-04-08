@@ -21,7 +21,7 @@ public class Security {
         http.authorizeHttpRequests(
                 auth -> auth.anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable())
-//                .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
@@ -31,6 +31,7 @@ public class Security {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 
 }

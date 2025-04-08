@@ -32,13 +32,13 @@ public class AccountController {
     }
 
     @PatchMapping("/email")
-    public ResponseEntity<Void> updateEmail(@RequestParam String uuid, @RequestParam String email) {
+    public ResponseEntity<Void> updateEmail(@RequestParam String uuid, @RequestParam("email") String email) {
         accountService.updateEmailByUuid(uuid, email);
         return ResponseEntity.status(204).build();
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestParam String uuid, @RequestParam String password) {
+    public ResponseEntity<Void> updatePassword(@RequestParam String uuid, @RequestParam("password") String password) {
         accountService.updatePasswordByUUID(uuid, password);
         return ResponseEntity.status(204).build();
     }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -30,4 +31,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query(nativeQuery = true, value = "DELETE from accounts where uuid = :uuid")
     Void deleteByUuid(@Param("uuid") UUID uuid);
+
+    Optional<Account> findByDocument(String document);
 }
