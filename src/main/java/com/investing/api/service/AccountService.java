@@ -4,7 +4,6 @@ import com.investing.api.entity.Access;
 import com.investing.api.entity.Account;
 import com.investing.api.entity.Stock;
 import com.investing.api.entity.dto.*;
-import com.investing.api.exceptions.BadLoginRequestException;
 import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;

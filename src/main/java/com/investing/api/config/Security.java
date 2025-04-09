@@ -37,7 +37,9 @@ public class Security {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(
-                auth -> auth.anyRequest().permitAll())
+                auth -> auth
+                        .requestMatchers("/auth").permitAll()
+                        .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
