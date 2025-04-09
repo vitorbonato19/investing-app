@@ -11,3 +11,9 @@ spring:
 
 api:
   key: ${API_KEY}
+
+jwt:
+  private:
+    key: classpath:private_key
+  public:
+    key: classpath:public_key

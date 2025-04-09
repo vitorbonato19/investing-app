@@ -17,6 +17,7 @@ public interface AccountMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "document", ignore = true)
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "perms", ignore = true)
     Account responseToEntity(AccountResponseDto response);
 
     @Mapping(target = "id", ignore = true)
@@ -29,5 +30,6 @@ public interface AccountMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "stocks", ignore = true)
+    @Mapping(target = "perms", ignore = true)
     Account requestToEntity(AccountRequestDto request);
 }

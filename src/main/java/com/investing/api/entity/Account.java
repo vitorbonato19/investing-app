@@ -6,6 +6,7 @@ import org.hibernate.annotations.UuidGenerator;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.security.Permissions;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,11 +34,15 @@ public class Account {
     private BigDecimal equity;
     @OneToMany(mappedBy = "account")
     private List<Stock> stocks;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "accountaccess", joinColumns = @JoinColumn(name = "accountId"), inverseJoinColumns = @JoinColumn(name = "accessId"))
+    private List<Access> perms;
 
     public Account() {
 
     }
-    public Account(Long id, UUID uuid, String name, String document, String password, String email, BigDecimal equity, List<Stock> stocks) {
+
+    public Account(Long id, UUID uuid, String name, String document, String password, String email, BigDecimal equity, List<Stock> stocks, List<Access> perms) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
@@ -46,6 +51,7 @@ public class Account {
         this.email = email;
         this.equity = equity;
         this.stocks = stocks;
+        this.perms = perms;
     }
 
     public Long getId() {
@@ -64,27 +70,27 @@ public class Account {
         this.uuid = uuid;
     }
 
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
-    public String getDocument() {
+    public @NotNull String getDocument() {
         return document;
     }
 
-    public void setDocument(String document) {
+    public void setDocument(@NotNull String document) {
         this.document = document;
     }
 
-    public String getPassword() {
+    public @NotNull @NotBlank String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@NotNull @NotBlank String password) {
         this.password = password;
     }
 
@@ -110,5 +116,13 @@ public class Account {
 
     public void setStocks(List<Stock> stocks) {
         this.stocks = stocks;
+    }
+
+    public List<Access> getPerms() {
+        return perms;
+    }
+
+    public void setPerms(List<Access> perms) {
+        this.perms = perms;
     }
 }
