@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record StockAccountResponseDto(UUID account_id,
-                                      String name,
                                       String ticker,
                                       String currency,
                                       String shortName,

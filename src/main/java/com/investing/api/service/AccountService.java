@@ -150,7 +150,6 @@ public class AccountService {
 
             return new StockAccountResponseDto(
                     UUID.fromString(uuid),
-                    entity.getName(),
                     ticker,
                     getCurrency(ticker),
                     quoteEntity(ticker).results().getFirst().shortName(),
@@ -162,7 +161,6 @@ public class AccountService {
 
         return new StockAccountResponseDto(
                 UUID.fromString(uuid),
-                entity.getName(),
                 ticker,
                 getCurrency(ticker),
                 quoteEntity(ticker).results().getFirst().shortName(),

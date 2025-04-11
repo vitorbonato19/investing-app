@@ -14,17 +14,19 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AccountMapper {
 
+    @Mapping(target = "uuid", source ="account_id")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "document", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "name", ignore = true)
+    @Mapping(target = "equity", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "perms", ignore = true)
     Account responseToEntity(AccountResponseDto response);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "document", ignore = true)
-    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "account_id", source = "uuid")
     List<AccountResponseDto> entityToResponse(List<Account> entity);
 
+    @Mapping(target = "account_id", source="uuid")
     AccountResponseDto entityToResponse(Account entity);
 
     @Mapping(target = "id", ignore = true)
