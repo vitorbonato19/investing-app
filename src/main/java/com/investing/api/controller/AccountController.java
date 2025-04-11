@@ -24,7 +24,8 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountResponseDto>> findAll(JwtAuthenticationToken token) {
+    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
+    public ResponseEntity<List<AccountResponseDto>> findAll() {
         return ResponseEntity.status(200).body(accountService.findAll());
     }
 

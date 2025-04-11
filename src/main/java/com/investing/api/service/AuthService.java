@@ -34,7 +34,7 @@ public class AuthService {
             throw new BadLoginRequestException("Document or password do not matches, please verify your request.", HttpStatus.BAD_REQUEST);
         }
 
-        var scopes = entity.getPerms().stream().map(Access::getName).collect(Collectors.joining(" "));
+        var perms = entity.getPerms().stream().map(Access::getName).collect(Collectors.joining(" "));
 
         JwtClaimsSet claims =  JwtClaimsSet
                 .builder()
@@ -42,7 +42,7 @@ public class AuthService {
                 .issuer("investing-app")
                 .subject(entity.getId().toString())
                 .expiresAt(Instant.now().plusSeconds(150L))
-                .claim("SCOPE", scopes)
+                .claim("scope", perms)
                 .build();
 
         var jwt = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
