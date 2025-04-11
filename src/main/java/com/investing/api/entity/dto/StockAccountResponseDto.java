@@ -8,6 +8,6 @@ public record StockAccountResponseDto(UUID account_id,
                                       String currency,
                                       String shortName,
                                       Long quantity,
-                                      BigDecimal actualRegularMarketPrice,
+                                      BigDecimal regularMarketPrice,
                                       BigDecimal totalValue) {
 }

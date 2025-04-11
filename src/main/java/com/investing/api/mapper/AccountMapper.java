@@ -11,7 +11,7 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedTargetPolicy = ReportingPolicy.ERROR, uses = StockMapper.class)
 public interface AccountMapper {
 
     @Mapping(target = "uuid", source ="account_id")
@@ -26,7 +26,7 @@ public interface AccountMapper {
     @Mapping(target = "account_id", source = "uuid")
     List<AccountResponseDto> entityToResponse(List<Account> entity);
 
-    @Mapping(target = "account_id", source="uuid")
+    @Mapping(target = "account_id", source = "uuid")
     AccountResponseDto entityToResponse(Account entity);
 
     @Mapping(target = "id", ignore = true)

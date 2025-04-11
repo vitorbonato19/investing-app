@@ -1,6 +1,7 @@
 package com.investing.api.mapper;
 
 import com.investing.api.entity.Stock;
+import com.investing.api.entity.dto.StockAccountResponseDto;
 import com.investing.api.entity.dto.StockRequestDto;
 import com.investing.api.entity.dto.StockResponseDto;
 import org.mapstruct.Mapper;
@@ -31,4 +32,16 @@ public interface StockMapper {
     @Mapping(target = "currency", ignore = true)
     @Mapping(target = "account", ignore = true)
     Stock requestToEntity(StockRequestDto request);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "longName", ignore = true)
+    @Mapping(target = "account", ignore = true)
+    Stock stockAccountToEntity(StockAccountResponseDto response);
+
+    @Mapping(target = "account_id", source = "account.uuid")
+    @Mapping(
+            target = "totalValue",
+            expression = "java(stock.getRegularMarketPrice().multiply(java.math.BigDecimal.valueOf(stock.getQuantity())))"
+    )
+    StockAccountResponseDto toStockAccountResponseto(Stock stock);
 }

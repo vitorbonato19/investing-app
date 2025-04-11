@@ -184,4 +184,28 @@ public class AccountService {
         return externalApi.quote(BRAPI_TOKEN, ticker);
     }
 
+    public void udpateAccountAccessToMedium(String accountId) {
+
+        Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
+
+        Access medium = accessRepository.findByName("MEDIUM");
+
+        List<Access> accesses = entity.getPerms();
+        accesses.add(medium);
+        entity.setPerms(accesses);
+        accountRepository.save(entity);
+    }
+
+    public void udpateAccountAccessToHigh(String accountId) {
+
+        Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
+
+        Access high = accessRepository.findByName("HIGH");
+
+        List<Access> accesses = entity.getPerms();
+        accesses.add(high);
+        entity.setPerms(accesses);
+        accountRepository.save(entity);
+    }
+
 }

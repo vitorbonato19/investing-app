@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public record AccountResponseDto(UUID account_id,
                                String document,
-                               List<Stock> stocks) {
+                               List<StockAccountResponseDto> stocks) {
 }

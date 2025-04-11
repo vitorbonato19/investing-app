@@ -2,12 +2,10 @@ package com.investing.api.controller;
 
 import com.investing.api.entity.dto.AccountRequestDto;
 import com.investing.api.entity.dto.AccountResponseDto;
-import com.investing.api.entity.dto.BrapiQuoteDto;
 import com.investing.api.entity.dto.StockAccountResponseDto;
 import com.investing.api.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,7 +22,7 @@ public class AccountController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<AccountResponseDto>> findAll() {
         return ResponseEntity.status(200).body(accountService.findAll());
     }
@@ -35,25 +33,31 @@ public class AccountController {
     }
 
     @PatchMapping("/email")
-    public ResponseEntity<Void> updateEmail(@RequestParam String uuid, @RequestParam("email") String email, @RequestHeader String Authorization) {
+    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
+    public ResponseEntity<Void> updateEmail(@RequestParam String uuid, @RequestParam("email") String email) {
         accountService.updateEmailByUuid(uuid, email);
         return ResponseEntity.status(204).build();
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestParam String uuid, @RequestParam("password") String password, @RequestHeader String Authorization) {
+    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
+    public ResponseEntity<Void> updatePassword(@RequestParam String uuid, @RequestParam("password") String password) {
         accountService.updatePasswordByUUID(uuid, password);
         return ResponseEntity.status(204).build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> delete(@PathVariable String uuid, @RequestHeader String Authorization) {
-        accountService.deleteByUuid(uuid);
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable String accountId) {
+        accountService.deleteByUuid(accountId);
         return ResponseEntity.status(204).build();
     }
 
     @GetMapping("/{ticker}")
-    public ResponseEntity<StockAccountResponseDto> getStocksInfo(@PathVariable("ticker") String ticker, @RequestParam String id, @RequestHeader String Authorization) {
+    @PreAuthorize("hasAuthority('SCOPE_MEDIUM')")
+    public ResponseEntity<StockAccountResponseDto> getStocksInfo(@PathVariable("ticker") String ticker, @RequestParam String id) {
 	        return ResponseEntity.status(200).body(accountService.getStockInfoByTicker(id, ticker));
     }
+
+
 }

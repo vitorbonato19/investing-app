@@ -1,4 +1,24 @@
 package com.investing.api.config;
 
-public class PreAdminCreation {
+import com.investing.api.service.AccountService;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class PreAdminCreation implements CommandLineRunner {
+
+    private final AccountService accountService;
+
+    public PreAdminCreation(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+
+
+
+
+
+    }
 }
