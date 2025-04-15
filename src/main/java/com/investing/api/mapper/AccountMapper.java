@@ -24,9 +24,13 @@ public interface AccountMapper {
     Account responseToEntity(AccountResponseDto response);
 
     @Mapping(target = "account_id", source = "uuid")
+    @Mapping(target = "accountAccess", source = "perms")
+    @Mapping(target = "ownerName", source = "name")
     List<AccountResponseDto> entityToResponse(List<Account> entity);
 
     @Mapping(target = "account_id", source = "uuid")
+    @Mapping(target = "accountAccess", source = "perms")
+    @Mapping(target = "ownerName", source = "name")
     AccountResponseDto entityToResponse(Account entity);
 
     @Mapping(target = "id", ignore = true)

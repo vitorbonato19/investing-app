@@ -6,6 +6,7 @@ import com.investing.api.entity.Stock;
 import com.investing.api.entity.dto.*;
 import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
+import com.investing.api.exceptions.StockNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;
 import com.investing.api.mapper.AccountMapper;
 import com.investing.api.repository.AccessRepository;
@@ -139,6 +140,10 @@ public class AccountService {
         Stock stock = stockRepository.findByTicker(
                 findByUuid(accountId).getId()
                 , ticker);
+
+        if (stock == null) {
+            throw new StockNotFoundException("Stock " + ticker + " not found for account " + accountId, HttpStatus.NOT_FOUND);
+        }
 
         if (!stock.getRegularMarketPrice().equals(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()))) {
 

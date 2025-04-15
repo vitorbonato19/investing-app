@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public record AccountResponseDto(UUID account_id,
                                String document,
-                               List<Access> perms,
+                               String ownerName,
+                               List<Access> accountAccess,
                                List<StockAccountResponseDto> stocks) {
 }

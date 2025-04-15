@@ -3,6 +3,7 @@ package com.investing.api.handler;
 import com.investing.api.exceptions.BadLoginRequestException;
 import com.investing.api.exceptions.InvalidRequestException;
 import com.investing.api.exceptions.RegisterNotFoundException;
+import com.investing.api.exceptions.StockNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +43,18 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(BadLoginRequestException.class)
     public ResponseEntity<Map<String, Object>> badLogin(BadLoginRequestException ex, HttpServletRequest request) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", ex.getStatus().value());
+        response.put("statusCode", ex.getStatus());
+        response.put("details", ex.getMessage());
+
+        return new ResponseEntity<>(response, ex.getStatus());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(StockNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> stockNotFound(StockNotFoundException ex, HttpServletRequest request) {
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", ex.getStatus().value());
