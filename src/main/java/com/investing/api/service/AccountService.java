@@ -95,39 +95,27 @@ public class AccountService {
         return accountMapper.entityToResponse(response);
     }
 
-    public void updateEmailByUuid(String uuid, String email) {
+    public void updateEmailByUuid(String accountId, String email) {
 
-        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        Account entity = findByUuid(accountId);
+        entity.setEmail(email);
+        accountRepository.save(entity);
 
-        if (entity != null) {
-            entity.setEmail(email);
-            accountRepository.save(entity);
-        } else {
-            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
-        }
     }
 
-    public void updatePasswordByUUID(String uuid, String password) {
+    public void updatePasswordByUUID(String accountId, String password) {
 
-        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        Account entity = findByUuid(accountId);
+        entity.setPassword(bCryptPasswordEncoder.encode(password));
+        accountRepository.save(entity);
 
-        if (entity != null) {
-            entity.setPassword(password);
-            accountRepository.save(entity);
-        } else {
-            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
-        }
     }
 
-    public void deleteByUuid(String uuid) {
+    public void deleteByUuid(String accountId) {
 
-        var entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        Account entity = findByUuid(accountId);
+        accountRepository.deleteById(entity.getId());
 
-        if (entity != null) {
-            accountRepository.deleteByUuid(UUID.fromString(uuid));
-        } else {
-            throw new RegisterNotFoundException("Account not found with UUID " + uuid, HttpStatus.NOT_FOUND);
-        }
     }
 
     public Boolean verifyAccountLoginCredentials(LoginRequestDto request) {
@@ -140,21 +128,17 @@ public class AccountService {
         return bCryptPasswordEncoder.matches(request.password(), entity.getPassword());
     }
 
-    public StockAccountResponseDto getStockInfoByTicker(String uuid, String ticker) {
+    public StockAccountResponseDto getStockInfoByTicker(String accountId, String ticker) {
 
-        if (uuid.isBlank() && ticker.isBlank()) {
+        if (accountId.isBlank() && ticker.isBlank()) {
             throw new InvalidRequestException("Request was invalidated.", HttpStatus.BAD_REQUEST);
         }
 
-        Account entity = accountRepository.findByUUID(UUID.fromString(uuid));
+        Account entity = findByUuid(accountId);
 
         Stock stock = stockRepository.findByTicker(
-                accountRepository.findByUUID(UUID.fromString(uuid)).getId()
+                findByUuid(accountId).getId()
                 , ticker);
-
-        if (entity == null || stock == null) {
-                throw new RegisterNotFoundException("Account or Stock not found, verify the request -> Account ID " + uuid + " Stock Ticker " + ticker, HttpStatus.NOT_FOUND);
-            }
 
         if (!stock.getRegularMarketPrice().equals(BigDecimal.valueOf(quoteEntity(ticker).results().getFirst().regularMarketPrice()))) {
 
@@ -163,7 +147,7 @@ public class AccountService {
             stockRepository.save(stock);
 
             return new StockAccountResponseDto(
-                    UUID.fromString(uuid),
+                    UUID.fromString(accountId),
                     ticker,
                     getCurrency(ticker),
                     quoteEntity(ticker).results().getFirst().shortName(),
@@ -174,7 +158,7 @@ public class AccountService {
         }
 
         return new StockAccountResponseDto(
-                UUID.fromString(uuid),
+                UUID.fromString(accountId),
                 ticker,
                 getCurrency(ticker),
                 quoteEntity(ticker).results().getFirst().shortName(),
@@ -200,7 +184,7 @@ public class AccountService {
 
     public void updateAccountAccessToMedium(String accountId) {
 
-        Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
+        Account entity = findByUuid(accountId);
 
         Access medium = accessRepository.findByName("MEDIUM");
 
@@ -212,7 +196,7 @@ public class AccountService {
 
     public void updateAccountAccessToHigh(String accountId) {
 
-        Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
+        Account entity = findByUuid(accountId);
 
         Access high = accessRepository.findByName("HIGH");
 

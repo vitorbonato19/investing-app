@@ -17,7 +17,11 @@ public class PreAdminCreation implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        var admin = accountService.find
+        var admin = accountService.findByDocument("99999999999");
+
+        
+
+
 
 
 
