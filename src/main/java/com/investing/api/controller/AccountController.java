@@ -59,5 +59,18 @@ public class AccountController {
 	        return ResponseEntity.status(200).body(accountService.getStockInfoByTicker(id, ticker));
     }
 
+    @PutMapping("/medium")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Void> updateAccountAccessToMedium(@RequestParam String accountId) {
+        accountService.updateAccountAccessToMedium(accountId);
+        return ResponseEntity.status(204).build();
+    }
+
+    @PutMapping("/high")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Void> updateAccountAccessToHigh(@RequestParam String accountId) {
+        accountService.updateAccountAccessToHigh(accountId);
+        return ResponseEntity.status(204).build();
+    }
 
 }

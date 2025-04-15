@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -64,6 +65,19 @@ public class AccountService {
         return accountRepository.findByDocument(document).orElseThrow(
                 () -> new RegisterNotFoundException("User not found with document " + document, HttpStatus.NOT_FOUND)
         );
+    }
+
+    public Account findByEmail(@Email String email) {
+        return accountRepository.findByEmail(email).orElseThrow(
+                () -> new RegisterNotFoundException("user not found with email " + email, HttpStatus.NOT_FOUND)
+        );
+    }
+
+    public Account findByUuid(String accountid) {
+        return accountRepository.findByUUID(UUID.fromString(accountid))
+                .orElseThrow(
+                        () -> new RegisterNotFoundException("user not found with id " + accountid, HttpStatus.NOT_FOUND)
+                );
     }
 
     @Transactional
@@ -184,7 +198,7 @@ public class AccountService {
         return externalApi.quote(BRAPI_TOKEN, ticker);
     }
 
-    public void udpateAccountAccessToMedium(String accountId) {
+    public void updateAccountAccessToMedium(String accountId) {
 
         Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
 
@@ -196,7 +210,7 @@ public class AccountService {
         accountRepository.save(entity);
     }
 
-    public void udpateAccountAccessToHigh(String accountId) {
+    public void updateAccountAccessToHigh(String accountId) {
 
         Account entity = accountRepository.findByUUID(UUID.fromString(accountId));
 

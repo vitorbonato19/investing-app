@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query(nativeQuery = true, value = "select * from accounts where uuid = :uuid")
-    Account findByUUID(UUID uuid);
+    Optional<Account> findByUUID(UUID uuid);
 
     @Modifying
     @Transactional
@@ -33,4 +33,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Void deleteByUuid(@Param("uuid") UUID uuid);
 
     Optional<Account> findByDocument(String document);
+
+    Optional<Account> findByEmail(String email);
 }

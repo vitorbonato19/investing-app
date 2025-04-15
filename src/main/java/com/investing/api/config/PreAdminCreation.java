@@ -1,5 +1,6 @@
 package com.investing.api.config;
 
+import com.investing.api.repository.AccountRepository;
 import com.investing.api.service.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ public class PreAdminCreation implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        var admin = accountService.find
 
 
 
