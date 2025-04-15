@@ -197,9 +197,11 @@ public class AccountService {
 
         List<Access> accesses = entity.getPerms();
 
-        List<Access> containsHighAccess = accesses.stream().filter(access -> "HIGH".equals(access.getName())).toList();
+        List<Access> containsHigherAccess = accesses.stream()
+                .filter(access -> "HIGH".equals(access.getName()))
+                .filter(access -> "ADMIN".equals(access.getName())).toList();
 
-        if (!containsHighAccess.isEmpty()) {
+        if (!containsHigherAccess.isEmpty()) {
              throw new InvalidAccessChangeException("invalid access change request, owner have a access higher than the update request", HttpStatus.NOT_ACCEPTABLE);
         }
 
@@ -219,6 +221,14 @@ public class AccountService {
         Access high = accessRepository.findByName("HIGH");
 
         List<Access> accesses = entity.getPerms();
+
+
+        List<Access> containsHigherAccess = accesses.stream()
+                .filter(access -> "ADMIN".equals(access.getName())).toList();
+
+        if (!containsHigherAccess.isEmpty()) {
+            throw new InvalidAccessChangeException("invalid access change request, owner have a access higher than the update request", HttpStatus.NOT_ACCEPTABLE);
+        }
 
         accesses.clear();
         accesses.add(basic);
