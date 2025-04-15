@@ -5,6 +5,7 @@ import com.investing.api.entity.Account;
 import com.investing.api.entity.Stock;
 import com.investing.api.entity.dto.*;
 import com.investing.api.exceptions.InvalidRequestException;
+import com.investing.api.exceptions.InvalidAccessChangeException;
 import com.investing.api.exceptions.RegisterNotFoundException;
 import com.investing.api.exceptions.StockNotFoundException;
 import com.investing.api.feign.BrapiExternalApi;
@@ -192,8 +193,18 @@ public class AccountService {
         Account entity = findByUuid(accountId);
 
         Access medium = accessRepository.findByName("MEDIUM");
+        Access basic = accessRepository.findByName("BASIC");
 
         List<Access> accesses = entity.getPerms();
+
+        List<Access> containsHighAccess = accesses.stream().filter(access -> "HIGH".equals(access.getName())).toList();
+
+        if (!containsHighAccess.isEmpty()) {
+             throw new InvalidAccessChangeException("invalid access change request, owner have a access higher than the update request", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        accesses.clear();
+        accesses.add(basic);
         accesses.add(medium);
         entity.setPerms(accesses);
         accountRepository.save(entity);
@@ -203,9 +214,15 @@ public class AccountService {
 
         Account entity = findByUuid(accountId);
 
+        Access basic = accessRepository.findByName("BASIC");
+        Access medium = accessRepository.findByName("MEDIUM");
         Access high = accessRepository.findByName("HIGH");
 
         List<Access> accesses = entity.getPerms();
+
+        accesses.clear();
+        accesses.add(basic);
+        accesses.add(medium);
         accesses.add(high);
         entity.setPerms(accesses);
         accountRepository.save(entity);
