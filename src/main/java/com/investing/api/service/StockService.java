@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,28 +25,29 @@ public class StockService {
 
     private final StockRepository stockRepository;
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     private final StockMapper stockMapper;
 
-    public StockService(BrapiExternalApi brapi, StockRepository stockRepository, AccountRepository accountRepository, StockMapper stockMapper) {
+    public StockService(BrapiExternalApi brapi, StockRepository stockRepository, AccountService accountService, StockMapper stockMapper) {
         this.brapi = brapi;
         this.stockRepository = stockRepository;
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
         this.stockMapper = stockMapper;
     }
 
+
     public StockResponseDto create(StockRequestDto request) {
 
-        Long accountId = accountRepository.findByUUID(UUID.fromString(request.account())).getId();
+        Long accountId = accountService.findByUuid(request.account()).getId();
 
         Stock stock = stockRepository.findByTicker(
-                accountRepository.findByUUID(UUID.fromString(request.account())).getId()
+                accountId
                 ,request.ticker());
 
         if (stock != null) {
             stock.setQuantity(request.quantity());
-            stock.setAccount(accountRepository.findByUUID(UUID.fromString(request.account())));
+            stock.setAccount(accountService.findByUuid(request.account()));
             stock.setRegularMarketPrice(BigDecimal.valueOf(getRegularMarketPrice(request.ticker())));
             stockRepository.save(stock);
             return stockMapper.entityToResponse(stock);
@@ -57,7 +59,7 @@ public class StockService {
             newStock.setShortName(getAtualShortName(request.ticker()));
             newStock.setLongName(getActualLongName(request.ticker()));
             newStock.setQuantity(request.quantity());
-            newStock.setAccount(accountRepository.findByUUID(UUID.fromString(request.account())));
+            newStock.setAccount(accountService.findByUuid(request.account()));
             newStock.setRegularMarketPrice(BigDecimal.valueOf(getRegularMarketPrice(request.ticker())));
             stockRepository.save(newStock);
             return stockMapper.entityToResponse(newStock);
