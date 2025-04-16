@@ -33,8 +33,6 @@ import java.util.UUID;
 @Service
 public class AccountService {
 
-    private static final Logger log = LoggerFactory.getLogger(AccountService.class);
-
     @Value("${api.key}")
     private String BRAPI_TOKEN;
 
@@ -162,7 +160,6 @@ public class AccountService {
                     BigDecimal.valueOf(mathTotalExternalApi(entity.getStocks().getFirst().getQuantity(), ticker))
             );
         }
-
         return new StockAccountResponseDto(
                 UUID.fromString(accountId),
                 ticker,
@@ -172,7 +169,6 @@ public class AccountService {
                 stock.getRegularMarketPrice(),
                 stock.getRegularMarketPrice().multiply(BigDecimal.valueOf(stock.getQuantity()))
         );
-
     }
 
     public Double mathTotalExternalApi(Long quantity, String ticker) {

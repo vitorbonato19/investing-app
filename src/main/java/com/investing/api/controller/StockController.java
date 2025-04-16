@@ -18,7 +18,7 @@ public class StockController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SCOPE_BASIC)")
+    @PreAuthorize("hasAuthority('SCOPE_BASIC')")
     public ResponseEntity<StockResponseDto> pay(@RequestBody StockRequestDto request) {
         return ResponseEntity.status(201).body(stockService.create(request));
     }
