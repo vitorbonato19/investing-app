@@ -27,8 +27,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class AccountService {
@@ -130,7 +134,7 @@ public class AccountService {
 
     public StockAccountResponseDto getStockInfoByTicker(String accountId, String ticker) {
 
-        if (accountId.isBlank() && ticker.isBlank()) {
+        if (accountId.isBlank() || ticker.isBlank()) {
             throw new InvalidRequestException("Request was invalidated.", HttpStatus.BAD_REQUEST);
         }
 
@@ -193,11 +197,12 @@ public class AccountService {
 
         List<Access> accesses = entity.getPerms();
 
-        List<Access> containsHigherAccess = accesses.stream()
-                .filter(access -> "HIGH".equals(access.getName()))
-                .filter(access -> "ADMIN".equals(access.getName())).toList();
+        List<Access> containsHighAccess =
+                accesses.stream()
+                        .filter(
+                                a -> a.getName().contentEquals("HIGH") || a.getName().contentEquals("ADMIN")).toList();
 
-        if (!containsHigherAccess.isEmpty()) {
+        if (!containsHighAccess.isEmpty()) {
              throw new InvalidAccessChangeException("invalid access change request, owner have a access higher than the update request", HttpStatus.NOT_ACCEPTABLE);
         }
 
@@ -219,10 +224,12 @@ public class AccountService {
         List<Access> accesses = entity.getPerms();
 
 
-        List<Access> containsHigherAccess = accesses.stream()
-                .filter(access -> "ADMIN".equals(access.getName())).toList();
+        List<Access> containsHighAccess =
+                accesses.stream()
+                        .filter(
+                                a -> a.getName().contentEquals("ADMIN")).toList();
 
-        if (!containsHigherAccess.isEmpty()) {
+        if (!containsHighAccess.isEmpty()) {
             throw new InvalidAccessChangeException("invalid access change request, owner have a access higher than the update request", HttpStatus.NOT_ACCEPTABLE);
         }
 
