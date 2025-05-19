@@ -2,6 +2,7 @@ HELP.md
 target/
 src/main/resources/private_key
 src/main/resources/public_key
+src/main/resources/api_key
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

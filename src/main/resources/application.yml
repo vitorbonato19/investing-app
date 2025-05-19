@@ -10,7 +10,7 @@ spring:
     hibernate.ddl-auto: update
 
 api:
-  key: ${API_KEY}
+  key: classpath:api_key
 
 jwt:
   private:
